@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+<script>
+    // model
+    const model = {};
+    getAllData();
+
+    async function getAllData() {
+        const result = await axios.get('/api/todo');
+        model.items = result.data;
+        console.log(model.items);
+        updateView();
+    }
+
+    function updateView() {
+        document.getElementById('app').innerHTML = `
+            <h2>Simple Full Stack demo</h2>
+
+            Dagens gjøremål: <br/>
+            ${model.items.map(item => `
+                <li>${item.task} (${item.id})</li>
+            `).join('')}
+
+            Legg til ny:<br/>
+            <input type="text" oninput="model.inputText=this.value"/>
+            <button onclick="addNew()">Lag ny</button>
+        `;
+    }
+
+    async function addNew() {
+        const newTodoItem = { task: model.inputText };
+        await axios.post('/api/todo', newTodoItem);
+        await getAllData();
+    }
+</script>
+</body>
+</html>
